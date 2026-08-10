@@ -1,0 +1,9 @@
+.client-main {
+    padding: 20px;
+}
+
+.client-footer {
+    margin-top: 20px;
+    border-top: 1px solid #ccc;
+    text-align: center;
+}
