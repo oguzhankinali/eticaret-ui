@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import './ProductsPage.css'
-import axios from 'axios'
-
+import { HttpClientService } from '../../../services/httpclient.service';
 interface Product {
     id: string;
     name: string;
@@ -10,6 +9,7 @@ interface Product {
     stock: number;
 }
 
+const httpClientService = new HttpClientService();
 
 export default function ProductsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -17,8 +17,8 @@ export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const getProducts = async () => {
         try {
-            const response = await axios.get('https://localhost:7083/api/Products');
-            setProducts(response.data);
+            const data = await httpClientService.get<Product[]>({ controller: "products" });
+            setProducts(data);
         } catch (error) {
             console.error("Bir hata oluştu.");
         }
