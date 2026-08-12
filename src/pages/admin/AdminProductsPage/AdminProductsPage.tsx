@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import './AdminProductsPage.css';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
+import { HttpClientService } from '@/services/httpclient.service';
 interface Product {
     id: string;
     name: string;
     price: number;
     stock: number;
 }
-
+const httpClientService = new HttpClientService;
 export default function AdminProductsPage() {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
@@ -23,8 +24,8 @@ export default function AdminProductsPage() {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(API_URL);
-            setProducts(response.data);
+            const data = await httpClientService.get<Product[]>({ controller: "products" });
+            setProducts(data);
         } catch (error) {
             console.error("GET Hatası:", error);
             toast.error("Ürünler yüklenirken bir hata oluştu!");
@@ -37,24 +38,26 @@ export default function AdminProductsPage() {
         fetchProducts();
     }, []);
 
-    // POST İstegi
+    // POST - PUT İstegi
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
+            // Post
             if (!editingId) {
-                const response = await axios.post(API_URL, { name, stock: Number(stock), price: Number(price) });
+                const body = { name, stock: Number(stock), price: Number(price) }
+                await httpClientService.post({ controller: "products" }, body);
 
-                if (response.status === 200 || response.status === 201) {
-                    await fetchProducts();
-                    setName('');
-                    setPrice('');
-                    setStock('');
-                    toast.success("Ürün başarıyla veritabanına eklendi!");
-                }
-            }
+                await fetchProducts();
+                setName('');
+                setPrice('');
+                setStock('');
+                toast.success("Ürün başarıyla veritabanına eklendi!");
+
+            } // PUT
             else if (editingId) {
-                await axios.put(API_URL, { id: editingId, name, stock: Number(stock), price: Number(price) });
+                const body = { id: editingId, name, stock: Number(stock), price: Number(price) }
+                await httpClientService.put({ controller: "products" }, body);
                 await fetchProducts();
                 setEditingId(null);
                 setName('');
