@@ -160,7 +160,7 @@ export default function AdminProductsPage() {
                     Sayfa {page} / {Math.ceil(totalCount / size)}
                 </span>
 
-                <button type="button" disabled={page >= Math.ceil(totalCount / size)} onClick={() => setPage(page => page + 1)}>
+                <button type="button" disabled={page >= Math.ceil(totalCount / size) || totalCount === 0} onClick={() => setPage(page => page + 1)}>
                     Sonraki
                 </button>
             </div>

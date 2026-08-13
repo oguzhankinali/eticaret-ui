@@ -24,8 +24,17 @@
 }
 
 .product-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
     list-style: none;
     padding: 0;
+}
+
+@media (max-width: 768px) {
+    .product-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .product-card {
@@ -33,4 +42,40 @@
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 6px;
+}
+
+.client-pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    padding: 10px;
+}
+
+.client-pagination-container button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.client-pagination-container button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.client-pagination-container button:disabled {
+    background-color: #495057;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.client-pagination-container span {
+    color: #ffffff;
+    font-weight: 500;
 }

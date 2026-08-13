@@ -57,3 +57,35 @@
     padding: 12px;
     border-bottom: 1px solid #dee2e6;
 }
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.pagination-container button {
+    padding: 8px 16px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination-container button:hover:not(:disabled) {
+    background-color: #5a6268;
+}
+
+.pagination-container button:disabled {
+    background-color: #e0e0e0;
+    color: #a1a1a1;
+    cursor: not-allowed;
+}
+
+.pagination-container span {
+    color: #333333;
+    font-weight: bold;
+}

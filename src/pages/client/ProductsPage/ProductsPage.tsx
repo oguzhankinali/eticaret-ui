@@ -8,24 +8,33 @@ interface Product {
     price: number;
     stock: number;
 }
-
+interface PaginatedProductsResponse {
+    totalCount: number;
+    products: Product[];
+}
 const httpClientService = new HttpClientService();
 
 export default function ProductsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const selectedCategory = searchParams.get("category");
     const [products, setProducts] = useState<Product[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const [size, setSize] = useState<number>(8);
+    const [totalCount, setTotalCount] = useState<number>(0);
+
     const getProducts = async () => {
         try {
-            const data = await httpClientService.get<Product[]>({ controller: "products" });
-            setProducts(data);
+            const data = await httpClientService.get<PaginatedProductsResponse>({ controller: "products", queryString: `page=${page}&size=${size}` });
+            setProducts(data.products);
+            setTotalCount(data.totalCount);
+
         } catch (error) {
             console.error("Bir hata oluştu.");
         }
     }
     useEffect(() => {
         getProducts();
-    }, []);
+    }, [page]);
     return (
         <div className="products-container">
 
@@ -59,6 +68,12 @@ export default function ProductsPage() {
                     <p>Bu kategoride ürün bulunamadı.</p>
                 )}
             </ul>
+            <div className="client-pagination-container">
+                <button disabled={page === 1} type="button" onClick={() => setPage(page => page - 1)}>Önceki</button>
+                <span>Sayfa {page} / {Math.ceil(totalCount / size) || 1} </span>
+                <button disabled={page >= Math.ceil(totalCount / size) || totalCount === 0} type="button" onClick={() => setPage(page => page + 1)}>Sonraki</button>
+
+            </div>
 
         </div>
     )
