@@ -9,9 +9,16 @@ interface Product {
     price: number;
     stock: number;
 }
+interface PaginatedProductsResponse {
+    totalCount: number;
+    products: Product[];
+}
 const httpClientService = new HttpClientService;
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
+    const [totalCount, setTotalCount] = useState<number>(0);
+    const [page, setPage] = useState<number>(1);
+    const [size, setSize] = useState<number>(5);
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [stock, setStock] = useState('');
@@ -24,8 +31,10 @@ export default function AdminProductsPage() {
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const data = await httpClientService.get<Product[]>({ controller: "products" });
-            setProducts(data);
+            const data = await httpClientService.get<PaginatedProductsResponse>({ controller: "products", queryString: `page=${page}&size=${size}` });
+            setProducts(data.products);
+            setTotalCount(data.totalCount);
+
         } catch (error) {
             console.error("GET Hatası:", error);
             toast.error("Ürünler yüklenirken bir hata oluştu!");
@@ -36,7 +45,7 @@ export default function AdminProductsPage() {
 
     useEffect(() => {
         fetchProducts();
-    }, []);
+    }, [page]);
 
     // POST - PUT İstegi
     const handleSubmit = async (e: React.FormEvent) => {
@@ -133,12 +142,24 @@ export default function AdminProductsPage() {
                                 </span>
                                 <button type="button" onClick={() => handleEditClick(product)}>Düzenle</button>
                                 <button type="button" onClick={() => handleDelete(product.id)}>Sil</button>
-
-
                             </li>
                         ))}
+
                     </ul>
                 )}
+                <div className="pagination-container">
+                    <button disabled={page === 1} onClick={() => setPage(page => page - 1)}>
+                        Önceki
+                    </button>
+
+                    <span>
+                        Sayfa {page} / {Math.ceil(totalCount / size)}
+                    </span>
+
+                    <button disabled={page >= Math.ceil(totalCount / size)} onClick={() => setPage(page => page + 1)}>
+                        Sonraki
+                    </button>
+                </div>
             </form>
         </div>
     );
