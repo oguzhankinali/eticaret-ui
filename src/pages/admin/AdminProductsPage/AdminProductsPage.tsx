@@ -65,16 +65,26 @@ export default function AdminProductsPage() {
                 setStock('');
                 toast.success("Ürün başarıyla güncellendi!");
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error("İşlem Hatası:", error);
-            toast.error(editingId ? "Ürün güncellenirken bir hata oluştu!" : "Ürün eklenirken bir hata oluştu!");
+            const validationErrors = error.response?.data;
+            if (validationErrors && typeof validationErrors === 'object') {
+                Object.keys(validationErrors).forEach((key) => {
+                    const messages = validationErrors[key];
+                    if (Array.isArray(messages)) {
+                        messages.forEach((msg: string) => toast.error(msg));
+                    }
+                });
+            } else {
+                toast.error(editingId ? "Ürün güncellenirken bir hata oluştu!" : "Ürün eklenirken bir hata oluştu!");
+            }
         }
     };
 
     //delete 
     const handleDelete = async (id: string) => {
         try {
-            const response = await axios.delete('https://localhost:7083/api/products/' + id);
+            await httpClientService.delete({ controller: "products" }, id);
             await fetchProducts();
             toast.success("Ürün başarıyla silindi!");
         } catch (error) {
