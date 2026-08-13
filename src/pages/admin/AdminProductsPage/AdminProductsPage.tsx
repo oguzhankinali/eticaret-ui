@@ -32,6 +32,10 @@ export default function AdminProductsPage() {
         try {
             setLoading(true);
             const data = await httpClientService.get<PaginatedProductsResponse>({ controller: "products", queryString: `page=${page}&size=${size}` });
+            if (data.products.length === 0 && page > 1) {
+                setPage(prev => prev - 1);
+                return;
+            }
             setProducts(data.products);
             setTotalCount(data.totalCount);
 
@@ -130,37 +134,36 @@ export default function AdminProductsPage() {
                 <div>
                     <button type="submit" className="submit-btn">{editingId ? 'Ürün Güncelle' : 'Ürün Ekle'}</button>
                 </div>
-
-                {loading ? (
-                    <p style={{ color: "#000000", marginTop: "15px" }}>Ürünler yükleniyor...</p>
-                ) : (
-                    <ul className="admin-product-list">
-                        {products.map((product: any) => (
-                            <li key={product.id} className="admin-product-item">
-                                <span>
-                                    <strong>{product.name}</strong> - Stok: {product.stock} Adet ({product.price} TL)
-                                </span>
-                                <button type="button" onClick={() => handleEditClick(product)}>Düzenle</button>
-                                <button type="button" onClick={() => handleDelete(product.id)}>Sil</button>
-                            </li>
-                        ))}
-
-                    </ul>
-                )}
-                <div className="pagination-container">
-                    <button disabled={page === 1} onClick={() => setPage(page => page - 1)}>
-                        Önceki
-                    </button>
-
-                    <span>
-                        Sayfa {page} / {Math.ceil(totalCount / size)}
-                    </span>
-
-                    <button disabled={page >= Math.ceil(totalCount / size)} onClick={() => setPage(page => page + 1)}>
-                        Sonraki
-                    </button>
-                </div>
             </form>
+            {loading ? (
+                <p style={{ color: "#000000", marginTop: "15px" }}>Ürünler yükleniyor...</p>
+            ) : (
+                <ul className="admin-product-list">
+                    {products.map((product) => (
+                        <li key={product.id} className="admin-product-item">
+                            <span>
+                                <strong>{product.name}</strong> - Stok: {product.stock} Adet ({product.price} TL)
+                            </span>
+                            <button type="button" onClick={() => handleEditClick(product)}>Düzenle</button>
+                            <button type="button" onClick={() => handleDelete(product.id)}>Sil</button>
+                        </li>
+                    ))}
+
+                </ul>
+            )}
+            <div className="pagination-container">
+                <button type="button" disabled={page === 1} onClick={() => setPage(page => page - 1)}>
+                    Önceki
+                </button>
+
+                <span>
+                    Sayfa {page} / {Math.ceil(totalCount / size)}
+                </span>
+
+                <button type="button" disabled={page >= Math.ceil(totalCount / size)} onClick={() => setPage(page => page + 1)}>
+                    Sonraki
+                </button>
+            </div>
         </div>
     );
 }
