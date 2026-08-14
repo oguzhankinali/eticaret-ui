@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './AdminProductsPage.css';
 import toast, { Toaster } from 'react-hot-toast';
-import axios from 'axios';
 import { HttpClientService } from '@/services/httpclient.service';
+import DeleteButton from '@/components/common/DeleteButton/DeleteButton';
 interface Product {
     id: string;
     name: string;
@@ -93,18 +93,6 @@ export default function AdminProductsPage() {
             }
         }
     };
-
-    //delete 
-    const handleDelete = async (id: string) => {
-        try {
-            await httpClientService.delete({ controller: "products" }, id);
-            await fetchProducts();
-            toast.success("Ürün başarıyla silindi!");
-        } catch (error) {
-            console.error("Hata:", error);
-            toast.error("Silme hatası!");
-        }
-    }
     //update
     const handleEditClick = async (product: Product) => {
         setEditingId(product.id);
@@ -145,7 +133,7 @@ export default function AdminProductsPage() {
                                 <strong>{product.name}</strong> - Stok: {product.stock} Adet ({product.price} TL)
                             </span>
                             <button type="button" onClick={() => handleEditClick(product)}>Düzenle</button>
-                            <button type="button" onClick={() => handleDelete(product.id)}>Sil</button>
+                            <DeleteButton controller="products" id={product.id} onSuccess={fetchProducts} />
                         </li>
                     ))}
 
