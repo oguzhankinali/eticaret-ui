@@ -3,6 +3,7 @@ import './AdminProductsPage.css';
 import toast, { Toaster } from 'react-hot-toast';
 import { HttpClientService } from '@/services/httpclient.service';
 import DeleteButton from '@/components/common/DeleteButton/DeleteButton';
+import FileUpload, { type FileUploadOptions } from '@/components/common/FileUpload/FileUpload';
 interface Product {
     id: string;
     name: string;
@@ -13,7 +14,8 @@ interface PaginatedProductsResponse {
     totalCount: number;
     products: Product[];
 }
-const httpClientService = new HttpClientService;
+
+const httpClientService = new HttpClientService();
 export default function AdminProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [totalCount, setTotalCount] = useState<number>(0);
@@ -24,6 +26,13 @@ export default function AdminProductsPage() {
     const [stock, setStock] = useState('');
     const [loading, setLoading] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+
+    const fileUploadOptions: FileUploadOptions = {
+        controller: "products",
+        action: "upload",
+        explanation: "Ürün resimlerini yükleyiniz.",
+        accept: ".png, .jpg, .jpeg"
+    };
 
     const API_URL = 'https://localhost:7083/api/Products';
 
@@ -106,6 +115,7 @@ export default function AdminProductsPage() {
 
             <h2 style={{ color: "#000000" }}>Admin Ürün Yönetimi</h2>
 
+            <FileUpload options={fileUploadOptions} />
             <form onSubmit={handleSubmit} className="product-form">
                 <div className="form-group">
                     <label>Ürün Adı:</label>
@@ -119,6 +129,7 @@ export default function AdminProductsPage() {
                     <label>Stok Adedi:</label>
                     <input type="number" value={stock} onChange={(e) => setStock(e.target.value)} />
                 </div>
+
                 <div>
                     <button type="submit" className="submit-btn">{editingId ? 'Ürün Güncelle' : 'Ürün Ekle'}</button>
                 </div>
