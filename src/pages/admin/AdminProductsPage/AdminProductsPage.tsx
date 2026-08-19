@@ -4,6 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { HttpClientService } from '@/services/httpclient.service';
 import DeleteButton from '@/components/common/DeleteButton/DeleteButton';
 import FileUpload, { type FileUploadOptions } from '@/components/common/FileUpload/FileUpload';
+import ProductImageModal from "../../../components/common/ProductImageModal/ProductImageModal";
 interface Product {
     id: string;
     name: string;
@@ -26,6 +27,7 @@ export default function AdminProductsPage() {
     const [stock, setStock] = useState('');
     const [loading, setLoading] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
     const fileUploadOptions: FileUploadOptions = {
         controller: "products",
@@ -140,6 +142,7 @@ export default function AdminProductsPage() {
                 <ul className="admin-product-list">
                     {products.map((product) => (
                         <li key={product.id} className="admin-product-item">
+                            <button type="button" onClick={() => setSelectedProductId(product.id)}>Photos</button>
                             <span>
                                 <strong>{product.name}</strong> - Stok: {product.stock} Adet ({product.price} TL)
                             </span>
@@ -163,6 +166,11 @@ export default function AdminProductsPage() {
                     Sonraki
                 </button>
             </div>
+            <ProductImageModal
+                isOpen={selectedProductId !== null}
+                productId={selectedProductId ?? ""}
+                onClose={() => setSelectedProductId(null)}
+            />
         </div>
     );
 }
