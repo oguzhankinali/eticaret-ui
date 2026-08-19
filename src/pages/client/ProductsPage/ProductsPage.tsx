@@ -2,11 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import './ProductsPage.css'
 import { HttpClientService } from '../../../services/httpclient.service';
+interface ProductImage {
+    id: string;
+    fileName: string;
+    path: string;
+}
 interface Product {
     id: string;
     name: string;
     price: number;
     stock: number;
+    productImageFiles?: ProductImage[];
 }
 interface PaginatedProductsResponse {
     totalCount: number;
@@ -59,6 +65,15 @@ export default function ProductsPage() {
                 {products.length > 0 ? (
                     products.map((product) => (
                         <li key={product.id} className="product-card">
+                            <img
+                                src={
+                                    (product.productImageFiles && product.productImageFiles.length > 0)
+                                        ? `https://eticaretdosya.blob.core.windows.net/${product.productImageFiles[0].path}/${product.productImageFiles[0].fileName}`
+                                        : "https://via.placeholder.com/150"
+                                }
+                                alt={product.name}
+                                className="product-image"
+                            />
                             <h3>{product.name}</h3>
                             <p>{product.price}</p>
                             <Link to={`/products/${product.id}`}>Ürün detayı</Link>
