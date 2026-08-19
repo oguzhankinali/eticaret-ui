@@ -1,11 +1,19 @@
 import { HttpClientService } from '../../../services/httpclient.service';
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
+import "./ProductDetailPage.css";
+interface ProductImage {
+    id: string;
+    fileName: string;
+    path: string;
+}
 interface Product {
     id: string;
     name: string;
     price: number;
     stock: number;
+    productImageFiles?: ProductImage[];
+
 }
 const httpClientService = new HttpClientService();
 export default function ProductDetailPage() {
@@ -29,6 +37,20 @@ export default function ProductDetailPage() {
         <div className="detail-container">
             {product ?
                 <div>
+                    <div className="product-images-gallery">
+                        {product.productImageFiles && product.productImageFiles.length > 0
+                            ? (product.productImageFiles.map((img) => (
+                                <img
+                                    key={img.id}
+                                    src={`https://eticaretdosya.blob.core.windows.net/${img.path}/${img.fileName}`}
+                                    alt={img.fileName}
+                                    className="detail-image"
+                                />
+                            )))
+                            : <p>Bu ürüne ait fotoğraf bulunmamaktadır.</p>
+
+                        }
+                    </div>
                     <h2>Ürün Detay Sayfası</h2>
                     <p>Ürün İsmi: <strong>{product.name}</strong></p>
                     <p>Stokta Bulunan: <strong>{product.stock}</strong></p>
