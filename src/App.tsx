@@ -23,8 +23,6 @@ export default function App() {
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-
-
       </Route>
 
       <Route element={<AdminLayout />}>
