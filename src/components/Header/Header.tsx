@@ -14,9 +14,10 @@ export default function Header(props: { username: string }) {
                 <Link to="/about" className="nav-link">Hakkımızda</Link>
             </nav>
 
-            <div>
-                <span style={{ color: '#101011' }}>Hoş geldin, <strong>{props.username}</strong></span>
-            </div>
+            <nav>
+                <Link to="/login" className="nav-link">Giriş Yap</Link>
+                <Link to="/register" className="nav-link">Kayıt ol</Link>
+            </nav>
 
 
         </header>

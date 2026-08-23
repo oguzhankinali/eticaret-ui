@@ -9,6 +9,8 @@ import AdminOrdersPage from './pages/admin/AdminOrdersPage/AdminOrdersPage'
 import AdminProductsPage from './pages/admin/AdminProductsPage/AdminProductsPage'
 import NotFoundPage from './pages/client/NotFoundPage/NotFoundPage'
 import ProductDetailPage from './pages/client/ProductDetailPage/ProductDetailPage'
+import RegisterPage from './pages/client/RegisterPage/RegisterPage'
+import LoginPage from './pages/client/LoginPage/LoginPage'
 
 export default function App() {
   return (
@@ -19,6 +21,10 @@ export default function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+
       </Route>
 
       <Route element={<AdminLayout />}>
