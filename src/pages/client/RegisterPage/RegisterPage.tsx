@@ -4,6 +4,7 @@ import { HttpClientService } from "@/services/httpclient.service";
 import { UserService } from "../../../services/user.service";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import "../LoginPage/LoginPage.css";
 const userService = new UserService(new HttpClientService());
 
 export default function RegisterPage() {
@@ -44,15 +45,29 @@ export default function RegisterPage() {
 
     }
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <input name="nameSurname" value={formData.nameSurname} type="text" onChange={handleChange} placeholder="Ad Soyad"></input>
-                <input name="userName" value={formData.userName} type="text" onChange={handleChange} placeholder="Kullanıcı Adı"></input>
-                <input name="email" value={formData.email} type="email" onChange={handleChange} placeholder="Email"></input>
-                <input name="password" value={formData.password} type="password" onChange={handleChange} placeholder="Şifre"></input>
-                <input name="passwordConfirm" value={formData.passwordConfirm} type="password" onChange={handleChange} placeholder="Şifre tekrarı"></input>
-                <button type="submit">Kayıt ol</button>
-            </form>
-        </>
+        <div className="login-container">
+            <div className="login-card">
+                <h2>Kayıt Ol</h2>
+                <form className="login-form" onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <input name="nameSurname" value={formData.nameSurname} type="text" onChange={handleChange} placeholder="Ad Soyad"></input>
+                    </div>
+                    <div className="form-group">
+                        <input name="userName" value={formData.userName} type="text" onChange={handleChange} placeholder="Kullanıcı Adı"></input>
+                    </div>
+                    <div className="form-group" >
+                        <input name="email" value={formData.email} type="email" onChange={handleChange} placeholder="Email"></input>
+                    </div>
+                    <div className="form-group">
+                        <input name="password" value={formData.password} type="password" onChange={handleChange} placeholder="Şifre"></input>
+                    </div>
+                    <div className="form-group">
+                        <input name="passwordConfirm" value={formData.passwordConfirm} type="password" onChange={handleChange} placeholder="Şifre tekrarı"></input>
+                    </div>
+                    <button className="btn-submit" type="submit">Kayıt ol</button>
+                </form>
+            </div>
+
+        </div>
     )
 }

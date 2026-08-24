@@ -21,5 +21,22 @@
 
 .nav-link {
     text-decoration: none;
-    color: #007bff;
+    color: #231816;
+}
+
+.auth-links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.auth-links a {
+    text-decoration: none;
+    color: #3f2f97;
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.auth-links a:hover {
+    color: #657fc9;
 }

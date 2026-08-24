@@ -1,14 +1,17 @@
 import type { Login_User } from "@/contracts/users/login_user"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { UserService } from "../../../services/user.service";
 import { HttpClientService } from "@/services/httpclient.service";
 import toast from "react-hot-toast";
+import "./LoginPage.css";
+import { useAuth } from "@/context/AuthContext";
 
 const userService = new UserService(new HttpClientService());
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const auth = useAuth();
     const [formData, setFormData] = useState<Login_User>({
         usernameOrEmail: "",
         password: ""
@@ -18,10 +21,10 @@ export default function LoginPage() {
         e.preventDefault();
         try {
             const response = await userService.login(formData);
-            localStorage.setItem("accessToken", response.accessToken);
+            auth.login(response.accessToken);
             toast.success("Giriş başarılı!");
             navigate("/");
-        } catch (error) {
+        } catch (e) {
             toast.error("Kullanıcı adı veya şifre hatalı!");
         }
     }
@@ -34,12 +37,20 @@ export default function LoginPage() {
 
 
     return (
-        <>
-            <form onSubmit={handleSubmit}>
-                <input name="usernameOrEmail" value={formData.usernameOrEmail} onChange={handleChange} type="text" placeholder="Kullanıcı Adı veya Email"></input>
-                <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="Şifre"></input>
-                <button>Giriş yap</button>
-            </form>
-        </>
+        <div className="login-container">
+            <div className="login-card">
+                <h2>Giriş Yap</h2>
+                <form className="login-form" onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <input name="usernameOrEmail" value={formData.usernameOrEmail} onChange={handleChange} type="text" placeholder="Kullanıcı Adı veya Email"></input>
+                    </div>
+                    <div className="form-group">
+                        <input name="password" value={formData.password} onChange={handleChange} type="password" placeholder="Şifre"></input>
+                    </div>
+                    <button className="btn-submit">Giriş yap</button>
+                </form>
+                <p style={{ color: 'red', paddingTop: 20 }}> Henüz Üye Değil Misiniz? <Link to="/register" style={{ color: 'darkmagenta' }} >Kayıt olun</Link></p>
+            </div>
+        </div>
     )
 }

@@ -11,28 +11,35 @@ import NotFoundPage from './pages/client/NotFoundPage/NotFoundPage'
 import ProductDetailPage from './pages/client/ProductDetailPage/ProductDetailPage'
 import RegisterPage from './pages/client/RegisterPage/RegisterPage'
 import LoginPage from './pages/client/LoginPage/LoginPage'
+import { AuthProvider } from './context/AuthContext'
+import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   return (
-    <Routes>
 
-      <Route element={<ClientLayout username="Oğuzhan" />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/products/:id" element={<ProductDetailPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-      </Route>
+    <AuthProvider>
+      <Toaster position="top-right" />
+      <Routes>
 
-      <Route element={<AdminLayout />}>
-        <Route path="/admin" element={<AdminDashboardPage />} />
-        <Route path="/admin/products" element={<AdminProductsPage />} />
-        <Route path="/admin/orders" element={<AdminOrdersPage />} />
-      </Route>
+        <Route element={<ClientLayout username="Oğuzhan" />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Route>
 
-      <Route path="*" element={<NotFoundPage />} />
+        <Route element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route path="/admin/products" element={<AdminProductsPage />} />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
+        </Route>
 
-    </Routes>
+        <Route path="*" element={<NotFoundPage />} />
+
+      </Routes>
+
+    </AuthProvider>
   )
 }
