@@ -1,24 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import './AdminProductsPage.css';
 import toast, { Toaster } from 'react-hot-toast';
-import { HttpClientService } from '@/services/httpclient.service';
 import DeleteButton from '@/components/common/DeleteButton/DeleteButton';
 import FileUpload, { type FileUploadOptions } from '@/components/common/FileUpload/FileUpload';
 import ProductImageModal from "../../../components/common/ProductImageModal/ProductImageModal";
-interface Product {
-    id: string;
-    name: string;
-    price: number;
-    stock: number;
-}
-interface PaginatedProductsResponse {
-    totalCount: number;
-    products: Product[];
-}
+import { HttpClientService } from '@/services/httpclient.service';
+import ProductService from '@/services/product.service';
+import type { List_Product } from '@/contracts/products/list_product';
 
-const httpClientService = new HttpClientService();
+
+const productService = new ProductService(new HttpClientService());
+
 export default function AdminProductsPage() {
-    const [products, setProducts] = useState<Product[]>([]);
+    const [products, setProducts] = useState<List_Product[]>([]);
     const [totalCount, setTotalCount] = useState<number>(0);
     const [page, setPage] = useState<number>(1);
     const [size, setSize] = useState<number>(5);
@@ -36,13 +30,12 @@ export default function AdminProductsPage() {
         accept: ".png, .jpg, .jpeg"
     };
 
-    const API_URL = 'https://localhost:7083/api/Products';
-
     // GET İstegi
     const fetchProducts = async () => {
         try {
             setLoading(true);
-            const data = await httpClientService.get<PaginatedProductsResponse>({ controller: "products", queryString: `page=${page}&size=${size}` });
+            const data = await productService.read(page, size);
+
             if (data.products.length === 0 && page > 1) {
                 setPage(prev => prev - 1);
                 return;
@@ -70,8 +63,7 @@ export default function AdminProductsPage() {
             // Post
             if (!editingId) {
                 const body = { name, stock: Number(stock), price: Number(price) }
-                await httpClientService.post({ controller: "products" }, body);
-
+                await productService.create(body);
                 await fetchProducts();
                 setName('');
                 setPrice('');
@@ -81,7 +73,7 @@ export default function AdminProductsPage() {
             } // PUT
             else if (editingId) {
                 const body = { id: editingId, name, stock: Number(stock), price: Number(price) }
-                await httpClientService.put({ controller: "products" }, body);
+                await productService.update(body);
                 await fetchProducts();
                 setEditingId(null);
                 setName('');
@@ -105,7 +97,7 @@ export default function AdminProductsPage() {
         }
     };
     //update
-    const handleEditClick = async (product: Product) => {
+    const handleEditClick = (product: List_Product) => {
         setEditingId(product.id);
         setName(product.name);
         setPrice(product.price.toString());

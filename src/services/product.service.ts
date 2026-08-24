@@ -1,6 +1,8 @@
 import { HttpClientService } from "./httpclient.service";
 import type { List_Product_Response } from "../contracts/products/list_product_response";
 import type { Create_Product } from "@/contracts/products/create_product";
+import type { Update_Product } from "@/contracts/products/update_product";
+import type { List_Product_Image } from "@/contracts/products/list_product_image";
 
 
 export default class ProductService {
@@ -21,4 +23,15 @@ export default class ProductService {
         await this.httpClientService.delete<void>({ controller: "products" }, id);
     }
 
+    async update(product: Update_Product): Promise<void> {
+        await this.httpClientService.put<Update_Product, void>({ controller: "products" }, product)
+    }
+
+    async readImages(id: string): Promise<List_Product_Image[]> {
+        return await this.httpClientService.get<List_Product_Image[]>({ controller: "products", action: `GetProductImages/${id}` });
+    }
+
+    async deleteImage(id: string, imageId: string): Promise<void> {
+        await this.httpClientService.delete<void>({ controller: "products", action: `DeleteProductImage`, queryString: `imageId=${imageId}` }, id);
+    }
 }

@@ -2,27 +2,26 @@ import { HttpClientService } from "@/services/httpclient.service";
 import { useEffect, useState } from "react";
 import "./ProductImageModal.css";
 import FileUpload from "../FileUpload/FileUpload";
+import ProductService from "@/services/product.service";
+import type { List_Product_Image } from "@/contracts/products/list_product_image";
+import toast from 'react-hot-toast';
 
 interface ProductImageModalProps {
     isOpen: boolean,
     productId: string,
     onClose: () => void
 }
-interface ProductImage {
-    id: string
-    path: string
-    fileName: string
-}
-const httpClientService = new HttpClientService();
+
+const productService = new ProductService(new HttpClientService());
 export default function ProductImageModal({ isOpen, productId, onClose }: ProductImageModalProps) {
-    const [images, setImages] = useState<ProductImage[]>([]);
+    const [images, setImages] = useState<List_Product_Image[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
     const fetchImages = async () => {
         try {
             console.log("1. fetchImages tetiklendi, productId:", productId);
             setLoading(true);
-            const photos = await httpClientService.get<ProductImage[]>({ controller: "products", action: `GetProductImages/${productId}` });
+            const photos = await productService.readImages(productId);
             setImages(photos);
         } catch (error) {
             console.log("2. fetchImages tetiklendi, productId:", productId);
@@ -34,8 +33,13 @@ export default function ProductImageModal({ isOpen, productId, onClose }: Produc
         }
     }
     const handleDeleteImages = async (imageId: string) => {
-        await httpClientService.delete<any>({ controller: "products", action: "DeleteProductImage", queryString: `imageId=${imageId}` }, `${productId}`);
-        setImages(images.filter(img => img.id !== imageId));
+        try {
+            await productService.deleteImage(productId, imageId);
+            setImages(images.filter(img => img.id !== imageId));
+            toast.success("Fotoğraf başarıyla silindi.");
+        } catch (error) {
+            toast.error("Fotoğraf silinirken bir hata oluştu!");
+        }
     }
     useEffect(() => {
         if (isOpen && productId) {
@@ -73,12 +77,14 @@ export default function ProductImageModal({ isOpen, productId, onClose }: Produc
 
                 </div>
                 <div className="modal-upload-area">
-                    <FileUpload options={{
-                        controller: "products",
-                        action: "Upload",
-                        queryString: `id=${productId}`,
-                        explanation: "Fotoğrafları buraya sürükleyin veya seçin."
-                    }} />
+                    <FileUpload
+                        onSuccess={fetchImages}
+                        options={{
+                            controller: "products",
+                            action: "Upload",
+                            queryString: `id=${productId}`,
+                            explanation: "Fotoğrafları buraya sürükleyin veya seçin."
+                        }} />
                 </div>
 
             </div>

@@ -11,8 +11,9 @@ export interface FileUploadOptions {
 
 interface FileUploadProps {
     options: FileUploadOptions;
+    onSuccess?: () => void;
 }
-export default function FileUpload({ options }: FileUploadProps) {
+export default function FileUpload({ options, onSuccess }: FileUploadProps) {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +32,9 @@ export default function FileUpload({ options }: FileUploadProps) {
             action: options.action,
             queryString: options.queryString
         }, fileData);
+        if (onSuccess) {
+            onSuccess();
+        }
         setSelectedFiles([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
