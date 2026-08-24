@@ -8,6 +8,20 @@ export interface RequestParameters {
     fullPath?: string;
 }
 export class HttpClientService {
+
+    constructor() {
+        axios.interceptors.request.use((config) => {
+            const token = localStorage.getItem("accessToken");
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        },
+            (error) => {
+                return Promise.reject(error);
+            })
+    }
+
     private baseUrl: string = "https://localhost:7083/api";
     private url(requestParameter: Partial<RequestParameters>): string {
         if (requestParameter.fullPath)
