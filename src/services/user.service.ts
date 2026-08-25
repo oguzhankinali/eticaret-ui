@@ -25,8 +25,5 @@ export class UserService {
         return await this.httpClientService.post<Create_User, Create_User_Response>({ controller: "users" }, user);
     }
 
-    async login(user: Login_User): Promise<Token> {
-        let response: Login_User_Response = await this.httpClientService.post<Login_User, Login_User_Response>({ controller: "users", action: "login" }, user);
-        return response.token;
-    }
+
 }

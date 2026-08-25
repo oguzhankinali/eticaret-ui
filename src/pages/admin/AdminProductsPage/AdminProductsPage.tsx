@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import './AdminProductsPage.css';
+import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import DeleteButton from '@/components/common/DeleteButton/DeleteButton';
-import FileUpload, { type FileUploadOptions } from '@/components/common/FileUpload/FileUpload';
 import ProductImageModal from "../../../components/common/ProductImageModal/ProductImageModal";
 import { HttpClientService } from '@/services/httpclient.service';
 import ProductService from '@/services/product.service';
@@ -23,12 +22,6 @@ export default function AdminProductsPage() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
-    const fileUploadOptions: FileUploadOptions = {
-        controller: "products",
-        action: "upload",
-        explanation: "Ürün resimlerini yükleyiniz.",
-        accept: ".png, .jpg, .jpeg"
-    };
 
     // GET İstegi
     const fetchProducts = async () => {
@@ -109,7 +102,7 @@ export default function AdminProductsPage() {
 
             <h2 style={{ color: "#000000" }}>Admin Ürün Yönetimi</h2>
 
-            <FileUpload options={fileUploadOptions} />
+
             <form onSubmit={handleSubmit} className="product-form">
                 <div className="form-group">
                     <label>Ürün Adı:</label>
