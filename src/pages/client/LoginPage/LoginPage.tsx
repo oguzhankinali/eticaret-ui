@@ -1,7 +1,6 @@
 import type { Login_User } from "@/contracts/users/login_user"
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom";
-import { UserService } from "../../../services/user.service";
 import { HttpClientService } from "@/services/httpclient.service";
 import toast from "react-hot-toast";
 import "./LoginPage.css";
@@ -9,7 +8,6 @@ import { useAuth } from "@/context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
 import { AuthService } from "@/services/auth.service";
 
-const userService = new UserService(new HttpClientService());
 const authService = new AuthService(new HttpClientService());
 
 export default function LoginPage() {
@@ -23,7 +21,7 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await userService.login(formData);
+            const response = await authService.login(formData);
             auth.login(response.accessToken);
             toast.success("Giriş başarılı!");
             navigate("/");

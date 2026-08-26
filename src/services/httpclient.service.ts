@@ -19,7 +19,37 @@ export class HttpClientService {
         },
             (error) => {
                 return Promise.reject(error);
-            })
+            });
+
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                const status: number | undefined = error.response?.status;
+
+                switch (status) {
+                    case 400:
+                        console.error("400 Bad Request: Geçersiz istek yapıldı.", error.response?.data);
+                        break;
+                    case 401:
+                        console.error("401 Unauthorized: Oturum süresi dolmuş veya yetkisiz erişim.");
+                        break;
+                    case 403:
+                        console.error("403 Forbidden: Bu kaynağa erişim yetkiniz yok.");
+                        break;
+                    case 500:
+                        console.error("500 Internal Server Error: Sunucu tarafında hata oluştu.");
+                        break;
+                    default:
+                        console.error("Beklenmeyen bir hata meydana geldi:", error.message);
+                        break;
+                }
+
+                return Promise.reject(error);
+            }
+        );
+
+
+
     }
 
     private baseUrl: string = "https://localhost:7083/api";
