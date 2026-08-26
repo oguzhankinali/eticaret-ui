@@ -6,8 +6,11 @@ import { HttpClientService } from "@/services/httpclient.service";
 import toast from "react-hot-toast";
 import "./LoginPage.css";
 import { useAuth } from "@/context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
+import { AuthService } from "@/services/auth.service";
 
 const userService = new UserService(new HttpClientService());
+const authService = new AuthService(new HttpClientService());
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -50,6 +53,20 @@ export default function LoginPage() {
                     <button className="btn-submit">Giriş yap</button>
                 </form>
                 <p style={{ color: 'red', paddingTop: 20 }}> Henüz Üye Değil Misiniz? <Link to="/register" style={{ color: 'darkmagenta' }} >Kayıt olun</Link></p>
+
+                <GoogleLogin
+                    onSuccess={async (credentialResponse) => {
+                        if (credentialResponse.credential) {
+                            const token = await authService.GoogleLogin({ idToken: credentialResponse.credential });
+                            auth.login(token.accessToken);
+                            toast.success("Google ile giriş başarılı!");
+                            navigate("/");
+                        }
+                    }}
+                    onError={() => {
+                        console.log('Login Failed');
+                    }}
+                />
             </div>
         </div>
     )
