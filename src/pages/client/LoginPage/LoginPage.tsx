@@ -21,8 +21,8 @@ export default function LoginPage() {
     const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await authService.login(formData);
-            auth.login(response.accessToken);
+            const token = await authService.login(formData);
+            auth.login(token);
             toast.success("Giriş başarılı!");
             navigate("/");
         } catch (e) {
@@ -56,7 +56,7 @@ export default function LoginPage() {
                     onSuccess={async (credentialResponse) => {
                         if (credentialResponse.credential) {
                             const token = await authService.GoogleLogin({ idToken: credentialResponse.credential });
-                            auth.login(token.accessToken);
+                            auth.login(token);
                             toast.success("Google ile giriş başarılı!");
                             navigate("/");
                         }

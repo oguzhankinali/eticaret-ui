@@ -19,6 +19,6 @@ export class AuthService {
 
     async GoogleLogin(idToken: GoogleLogin): Promise<Token> {
         const response = await this.httpClientService.post<GoogleLogin, GoogleLoginResponse>({ controller: "auth", action: "google-login" }, idToken);
-        return response.accessToken;
+        return response.token;
     }
 }

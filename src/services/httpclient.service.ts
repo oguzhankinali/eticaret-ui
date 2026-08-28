@@ -1,3 +1,5 @@
+import type { RefreshTokenRequest } from "@/contracts/token/refreshToken";
+import type { Token } from "@/contracts/token/token";
 import axios from "axios";
 export interface RequestParameters {
     controller: string;
@@ -7,6 +9,7 @@ export interface RequestParameters {
     baseUrl?: string;
     fullPath?: string;
 }
+
 export class HttpClientService {
 
     constructor() {
@@ -23,7 +26,7 @@ export class HttpClientService {
 
         axios.interceptors.response.use(
             (response) => response,
-            (error) => {
+            async (error) => {
                 const status: number | undefined = error.response?.status;
 
                 switch (status) {
@@ -31,8 +34,32 @@ export class HttpClientService {
                         console.error("400 Bad Request: Geçersiz istek yapıldı.", error.response?.data);
                         break;
                     case 401:
-                        console.error("401 Unauthorized: Oturum süresi dolmuş veya yetkisiz erişim.");
-                        break;
+                        const originalRequest = error.config;
+                        const refreshToken = localStorage.getItem("refreshToken");
+
+                        if (refreshToken && !originalRequest._retry) {
+                            originalRequest._retry = true;
+
+                            try {
+                                const response = await this.post<RefreshTokenRequest, Token>(
+                                    { controller: "auth", action: "refresh-token-login" },
+                                    { refreshToken: refreshToken }
+                                );
+
+                                localStorage.setItem("refreshToken", response.refreshToken);
+                                localStorage.setItem("accessToken", response.accessToken);
+
+                                originalRequest.headers["Authorization"] = `Bearer ${response.accessToken}`;
+                                return axios(originalRequest);
+                            } catch (refreshError) {
+                                localStorage.removeItem("accessToken");
+                                localStorage.removeItem("refreshToken");
+                                window.location.href = "/login";
+                                return Promise.reject(refreshError);
+                            }
+                        }
+                        return Promise.reject(error);
+
                     case 403:
                         console.error("403 Forbidden: Bu kaynağa erişim yetkiniz yok.");
                         break;
