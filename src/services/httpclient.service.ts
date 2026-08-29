@@ -1,6 +1,23 @@
 import type { RefreshTokenRequest } from "@/contracts/token/refreshToken";
 import type { Token } from "@/contracts/token/token";
 import axios from "axios";
+
+interface QueueItem {
+    resolve: (token: string) => void;
+    reject: (error: any) => void;
+}
+
+let isRefreshing: boolean = false;
+let failedQueue: QueueItem[] = [];
+const processQueue = (error: any, token: string | null = null) => {
+    failedQueue.forEach((item) => {
+        if (error)
+            item.reject(error);
+        else
+            item.resolve(token!);
+    });
+    failedQueue = [];
+};
 export interface RequestParameters {
     controller: string;
     action?: string;
@@ -34,6 +51,15 @@ export class HttpClientService {
                         console.error("400 Bad Request: Geçersiz istek yapıldı.", error.response?.data);
                         break;
                     case 401:
+                        if (isRefreshing) {
+                            return new Promise<string>((resolve, reject) => {
+                                failedQueue.push({ resolve, reject });
+                            }).then((token: string) => {
+                                if (error.config.headers)
+                                    error.config.headers["Authorization"] = `Bearer ${token}`;
+                                return axios(error.config);
+                            });
+                        }
                         const originalRequest = error.config;
                         const refreshToken = localStorage.getItem("refreshToken");
 
