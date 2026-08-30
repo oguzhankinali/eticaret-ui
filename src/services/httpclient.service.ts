@@ -1,6 +1,7 @@
 import type { RefreshTokenRequest } from "@/contracts/token/refreshToken";
 import type { Token } from "@/contracts/token/token";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 interface QueueItem {
     resolve: (token: string) => void;
@@ -48,8 +49,7 @@ export class HttpClientService {
 
                 switch (status) {
                     case 400:
-                        console.error("400 Bad Request: Geçersiz istek yapıldı.", error.response?.data);
-                        break;
+                        toast.error(error.response?.data?.message || "Geçersiz istek yapıldı."); break;
                     case 401:
                         if (isRefreshing) {
                             return new Promise<string>((resolve, reject) => {
@@ -67,17 +67,19 @@ export class HttpClientService {
                             originalRequest._retry = true;
 
                             try {
+                                isRefreshing = true;
                                 const response = await this.post<RefreshTokenRequest, Token>(
                                     { controller: "auth", action: "refresh-token-login" },
                                     { refreshToken: refreshToken }
                                 );
-
+                                processQueue(null, response.accessToken);
                                 localStorage.setItem("refreshToken", response.refreshToken);
                                 localStorage.setItem("accessToken", response.accessToken);
-
                                 originalRequest.headers["Authorization"] = `Bearer ${response.accessToken}`;
+                                isRefreshing = false;
                                 return axios(originalRequest);
                             } catch (refreshError) {
+                                processQueue(refreshError, null);
                                 localStorage.removeItem("accessToken");
                                 localStorage.removeItem("refreshToken");
                                 window.location.href = "/login";
@@ -87,13 +89,14 @@ export class HttpClientService {
                         return Promise.reject(error);
 
                     case 403:
-                        console.error("403 Forbidden: Bu kaynağa erişim yetkiniz yok.");
+                        toast.error("Bu işlemi yapmaya yetkiniz bulunmamaktadır.");
                         break;
                     case 500:
-                        console.error("500 Internal Server Error: Sunucu tarafında hata oluştu.");
+                        toast.error(error.response?.data?.message || "Sunucu tarafında beklenmeyen bir hata oluştu.");
                         break;
                     default:
-                        console.error("Beklenmeyen bir hata meydana geldi:", error.message);
+                        toast.error(error.message || "Beklenmeyen bir hata meydana geldi.");
+                        break;
                         break;
                 }
 

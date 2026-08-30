@@ -56,13 +56,15 @@ export default function LoginPage() {
                     onSuccess={async (credentialResponse) => {
                         if (credentialResponse.credential) {
                             const token = await authService.GoogleLogin({ idToken: credentialResponse.credential });
-                            auth.login(token);
-                            toast.success("Google ile giriş başarılı!");
-                            navigate("/");
+                            if (token) {
+                                auth.login(token);
+                                toast.success("Google ile giriş başarılı!");
+                                navigate("/");
+                            }
                         }
                     }}
                     onError={() => {
-                        console.log('Login Failed');
+                        toast.error("Google ile giriş başarısız oldu.");
                     }}
                 />
             </div>
