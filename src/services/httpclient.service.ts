@@ -97,7 +97,7 @@ export class HttpClientService {
                     default:
                         toast.error(error.message || "Beklenmeyen bir hata meydana geldi.");
                         break;
-                        break;
+
                 }
 
                 return Promise.reject(error);
