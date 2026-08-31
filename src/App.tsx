@@ -12,10 +12,21 @@ import ProductDetailPage from './pages/client/ProductDetailPage/ProductDetailPag
 import RegisterPage from './pages/client/RegisterPage/RegisterPage'
 import LoginPage from './pages/client/LoginPage/LoginPage'
 import { AuthProvider } from './context/AuthContext'
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import ProtectedRoute from './components/common/ProtectedRoute/ProtectedRoute'
+import { SignalRService } from './services/signalr.service';
+import { useEffect } from 'react'
 
 export default function App() {
+  useEffect(() => {
+    const signalRService = new SignalRService();
+    const connection = signalRService.start("https://localhost:7083/product-hub");
+    signalRService.on(connection, "receiveProductAddedMessage", (message: string) => {
+      toast.success(message, {
+        position: "top-right"
+      });
+    });
+  }, [])
   return (
 
     <AuthProvider>
